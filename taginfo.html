@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Trace My Steps</title>
+    <style>
+      html, body{width:100%;height:100%;}
+    #map_canvas
+    {
+    resize:both;
+    overflow:auto;
+    height:84%
+    }
+    #directions-panel {
+    background-color:#ffffff;
+    height: 84%;
+    float: left;
+    width: 100%;
+    overflow: auto;
+    font-color:#000000;
+    }
+    @media print {
+    #map-canvas {
+    height: 500px;
+    margin: 0;
+       }
+     }
+    </style>
+  
+    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=true"></script>
+    <script src="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.js"></script>
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <link rel="stylesheet" href="css/index.css" />
+    <script>
+    $(document).ready(function(){
+    $("#back1").click(function(){
+  
+   var url = "index.html";
+            window.location.href = url;
+  });
+  $("#getinfo").click(function(){
+  if ( $("#map_canvas").is(":visible") ) { 
+    $("#map_canvas").hide(400); 
+    $("#directions-panel").slideToggle(400);
+  } else if ( $("#map_canvas").is(":hidden") ) { 
+  $("#directions-panel").hide(400); 
+    $("#map_canvas").slideToggle(400);
+  }
+  });
+  });
+   </script>
+   <script>
+    var directionsDisplay;
+    var directionsService = new google.maps.DirectionsService();
+    var im = 'http://www.robotwoods.com/dev/misc/bluecircle.png';
+
+    function initialize() {
+            directionsDisplay = new google.maps.DirectionsRenderer();
+            var mapOptions = {
+               zoom: 7,
+               mapTypeId: google.maps.MapTypeId.ROADMAP,
+               center: new google.maps.LatLng(12.9667, 77.5667)
+            };
+  var map = new google.maps.Map(document.getElementById('map_canvas'),
+      mapOptions);
+  directionsDisplay.setMap(map);
+  directionsDisplay.setPanel(document.getElementById('directions-panel'));
+  var start = document.getElementById('start').value;
+  var end = document.getElementById('end').value;
+  var request = {
+    origin: start,
+    destination: end,
+    travelMode: google.maps.TravelMode.DRIVING 
+  };
+        var a=document.getElementById('lat').value;
+        var b=document.getElementById('lon').value;
+        var myLatLng1 = new google.maps.LatLng(a, b);
+        var marker = new google.maps.Marker({
+                            position: myLatLng1 ,
+                            map: map,
+                            icon:im,
+                        });
+  directionsService.route(request, function(response, status) {
+    if (status == google.maps.DirectionsStatus.OK) {
+      directionsDisplay.setDirections(response);
+    }
+  });
+}
+
+google.maps.event.addDomListener(window, 'load', initialize);
+
+    </script>
+  </head>
+  <body>
+   <script type="text/javascript">
+    var queryString = new Array();
+    $(function () {
+        if (queryString.length == 0) {
+            if (window.location.search.split('?').length > 1) {
+                var params = window.location.search.split('?')[1].split('&');
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+                }
+            }
+        }
+        if (queryString["first"] != null && queryString["last"] != null && queryString["lat1"] != null && queryString["lon1"] != null) {
+         var data = "<u>Values from QueryString</u><br /><br />";
+            data += "<b>Name:</b> " + queryString["first"] + " <b>Technology:</b> " + queryString["last"];
+            $("#lblData").html(data);
+			var source=queryString["first"];
+			document.getElementById("start").value=source;
+			var dest=queryString["last"];
+			document.getElementById("end").value=dest;
+			var latitude=queryString["lat1"];
+			document.getElementById("lat").value=latitude;
+			var longitude=queryString["lon1"];
+			document.getElementById("lon").value=longitude;
+        }
+    });
+</script>
+   <div id="directions-panel" style="display: none"></div>
+    <div id="map_canvas"></div>
+<div class="buttons1" id="options">
+   
+			<a class="list" href="#" id="back1"><img src="images/back2.png" title="Go Back" /></a>
+			<a class="list" href="#" id="getinfo"><img src="images/directinfo.png" title="Clear" /></a>
+			
+			
+		</div>
+     <input type="hidden" id="start"><input type="hidden" id="end"><input type="hidden" id="lat"><input type="hidden" id="lon">
+   
+  
+  </body>
+</html>
